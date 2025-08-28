@@ -7,16 +7,16 @@ use App\Exceptions\Service\SearchFailedException;
 use App\Repositories\PeopleRepositoryContract;
 use Throwable;
 
-readonly class PeopleService
+class PeopleService implements PeopleServiceContract
 {
     public function __construct(
-        private PeopleRepositoryContract $peopleRepository
+        private readonly PeopleRepositoryContract $peopleRepository
     ) {}
 
     /**
      * @return PeopleSearchResult[]
      *
-     * @throws Throwable
+     * @throws SearchFailedException
      */
     public function searchPeopleByName(string $name): array
     {
