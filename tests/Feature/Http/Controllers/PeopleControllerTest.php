@@ -65,7 +65,12 @@ final class PeopleControllerTest extends TestCase
         $service->shouldReceive('searchPeopleByName')
             ->once()
             ->with($keyword)
-            ->andThrow(new SearchFailedException('internal error'));
+            ->andThrow(
+                new SearchFailedException(
+                    errorIdentifierEnum: ErrorIdentifierEnum::PeopleSearchFailed,
+                    message: 'internal error'
+                )
+            );
 
         $this->app->instance(PeopleServiceContract::class, $service);
 

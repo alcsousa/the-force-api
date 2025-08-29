@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
-use App\Repositories\API\FilmsRepository;
+use App\Repositories\API\FilmsRepository as ApiFilmsRepository;
 use App\Repositories\API\PeopleRepository as ApiPeopleRepository;
 use App\Repositories\FilmsRepositoryContract;
 use App\Repositories\PeopleRepositoryContract;
+use App\Services\FilmsService;
+use App\Services\FilmsServiceContract;
 use App\Services\PeopleService;
 use App\Services\PeopleServiceContract;
 use Illuminate\Support\ServiceProvider;
@@ -26,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
         );
         $this->app->singleton(
             FilmsRepositoryContract::class,
-            FilmsRepository::class
+            ApiFilmsRepository::class
         );
 
         /*
@@ -35,6 +37,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(
             PeopleServiceContract::class,
             PeopleService::class
+        );
+        $this->app->singleton(
+            FilmsServiceContract::class,
+            FilmsService::class
         );
     }
 

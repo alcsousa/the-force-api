@@ -2,15 +2,15 @@
 
 namespace App\Support;
 
-class FilmIdExtractor
+class PathIdExtractor
 {
     /**
      * Extract a film ID from a trusted SWAPI film URL.
      *
      * Returns null if the URL is not HTTPS, not from the trusted host,
-     * or does not match the expected films path pattern.
+     * or does not match the expected path pattern.
      */
-    public static function extractFromUrl(string $url): ?int
+    public static function extractFromUrl(string $url, string $pathPrefix): ?int
     {
         $url = trim($url);
 
@@ -49,9 +49,9 @@ class FilmIdExtractor
         // Normalize trusted path to have no trailing slash
         $trustedPath = '/'.trim($trustedPath, '/');
         if ($trustedPath === '/') {
-            $expectedPrefix = '/films/';
+            $expectedPrefix = "/{$pathPrefix}/";
         } else {
-            $expectedPrefix = $trustedPath.'/films/';
+            $expectedPrefix = $trustedPath."/$pathPrefix/";
         }
 
         $incomingPath = $incomingParts['path'] ?? '';

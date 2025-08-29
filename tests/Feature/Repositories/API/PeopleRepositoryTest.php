@@ -93,7 +93,7 @@ class PeopleRepositoryTest extends TestCase
         (new PeopleRepository)->searchPeopleByName('Lu');
     }
 
-    public function test_get_details_returns_people_detail()
+    public function test_get_details_returns_people_detail(): void
     {
         $id = '64';
         Http::fake([

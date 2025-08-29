@@ -5,9 +5,19 @@ namespace App\Exceptions\Service;
 use App\Enums\ErrorIdentifierEnum;
 use App\Enums\HttpStatusEnum;
 use App\Exceptions\HttpRenderableException;
+use Throwable;
 
 class SearchFailedException extends HttpRenderableException
 {
+    public function __construct(
+        private readonly ErrorIdentifierEnum $errorIdentifierEnum,
+        string $message = '',
+        int $code = 0,
+        ?Throwable $previous = null
+    ) {
+        parent::__construct($message, $code, $previous);
+    }
+
     public function httpStatus(): HttpStatusEnum
     {
         return HttpStatusEnum::ServiceUnavailable;
@@ -20,6 +30,6 @@ class SearchFailedException extends HttpRenderableException
 
     public function errorIdentifier(): ErrorIdentifierEnum
     {
-        return ErrorIdentifierEnum::PeopleSearchFailed;
+        return $this->errorIdentifierEnum;
     }
 }

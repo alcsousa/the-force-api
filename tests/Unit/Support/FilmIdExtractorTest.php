@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Support;
 
-use App\Support\FilmIdExtractor;
+use App\Support\PathIdExtractor;
 use Illuminate\Support\Facades\Config;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -16,7 +16,7 @@ final class FilmIdExtractorTest extends TestCase
 
         $this->assertSame(
             $expectedId,
-            FilmIdExtractor::extractFromUrl($url)
+            PathIdExtractor::extractFromUrl($url, 'films')
         );
     }
 
@@ -46,11 +46,11 @@ final class FilmIdExtractorTest extends TestCase
     }
 
     #[DataProvider('provideInvalidFilmUrls')]
-    public function test_extract_from_url_returns_null_for_invalid_urls(?string $url): void
+    public function test_extract_from_url_returns_null_for_invalid_urls(string $url): void
     {
         Config::set('sw-api.base_url', 'https://www.swapi.tech/api/');
 
-        $this->assertNull(FilmIdExtractor::extractFromUrl((string) $url));
+        $this->assertNull(PathIdExtractor::extractFromUrl($url, 'films'));
     }
 
     /**
@@ -111,7 +111,7 @@ final class FilmIdExtractorTest extends TestCase
     {
         Config::set('sw-api.base_url', 'https://swapi.tech/');
 
-        $this->assertSame(7, FilmIdExtractor::extractFromUrl('https://swapi.tech/films/7'));
-        $this->assertNull(FilmIdExtractor::extractFromUrl('https://swapi.tech/api/films/7'));
+        $this->assertSame(7, PathIdExtractor::extractFromUrl('https://swapi.tech/films/7', 'films'));
+        $this->assertNull(PathIdExtractor::extractFromUrl('https://swapi.tech/api/films/7', 'films'));
     }
 }

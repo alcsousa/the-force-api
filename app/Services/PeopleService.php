@@ -4,12 +4,13 @@ namespace App\Services;
 
 use App\DTOs\FullPeopleDetail;
 use App\DTOs\PeopleSearchResult;
+use App\Enums\ErrorIdentifierEnum;
 use App\Exceptions\Service\SearchFailedException;
 use App\Repositories\FilmsRepositoryContract;
 use App\Repositories\PeopleRepositoryContract;
 use Throwable;
 
-class PeopleService implements PeopleServiceContract
+final class PeopleService implements PeopleServiceContract
 {
     public function __construct(
         private readonly PeopleRepositoryContract $peopleRepository,
@@ -27,6 +28,7 @@ class PeopleService implements PeopleServiceContract
             return $this->peopleRepository->searchPeopleByName($name);
         } catch (Throwable $throwable) {
             throw new SearchFailedException(
+                errorIdentifierEnum: ErrorIdentifierEnum::PeopleSearchFailed,
                 message: "Unable to complete search at this time for keyword {$name}",
                 previous: $throwable
             );
@@ -49,6 +51,7 @@ class PeopleService implements PeopleServiceContract
             return new FullPeopleDetail($peopleDetail, $films);
         } catch (Throwable $throwable) {
             throw new SearchFailedException(
+                errorIdentifierEnum: ErrorIdentifierEnum::PeopleSearchFailed,
                 message: "Unable to find person with id {$id}",
                 previous: $throwable
             );

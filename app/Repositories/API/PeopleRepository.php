@@ -6,7 +6,7 @@ use App\DTOs\PeopleDetail;
 use App\DTOs\PeopleSearchResult;
 use App\Exceptions\StarWarsApiException;
 use App\Repositories\PeopleRepositoryContract;
-use App\Support\FilmIdExtractor;
+use App\Support\PathIdExtractor;
 use Illuminate\Support\Facades\Http;
 use Throwable;
 
@@ -95,7 +95,7 @@ class PeopleRepository implements PeopleRepositoryContract
         $filmIds = [];
 
         foreach ($filmUrls as $filmUrl) {
-            $extractedId = FilmIdExtractor::extractFromUrl($filmUrl);
+            $extractedId = PathIdExtractor::extractFromUrl($filmUrl, 'films');
 
             if ($extractedId !== null) {
                 $filmIds[] = $extractedId;
