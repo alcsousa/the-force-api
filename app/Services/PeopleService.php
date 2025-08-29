@@ -2,15 +2,18 @@
 
 namespace App\Services;
 
+use App\DTOs\FullPeopleDetail;
 use App\DTOs\PeopleSearchResult;
 use App\Exceptions\Service\SearchFailedException;
+use App\Repositories\FilmsRepositoryContract;
 use App\Repositories\PeopleRepositoryContract;
 use Throwable;
 
 class PeopleService implements PeopleServiceContract
 {
     public function __construct(
-        private readonly PeopleRepositoryContract $peopleRepository
+        private readonly PeopleRepositoryContract $peopleRepository,
+        private readonly FilmsRepositoryContract $filmsRepository
     ) {}
 
     /**
@@ -25,6 +28,28 @@ class PeopleService implements PeopleServiceContract
         } catch (Throwable $throwable) {
             throw new SearchFailedException(
                 message: "Unable to complete search at this time for keyword {$name}",
+                previous: $throwable
+            );
+        }
+    }
+
+    /**
+     * @throws SearchFailedException
+     */
+    public function getById(string $id): FullPeopleDetail
+    {
+        try {
+            $peopleDetail = $this->peopleRepository->getDetails($id);
+            $films = [];
+
+            foreach ($peopleDetail->filmIds as $filmId) {
+                $films[] = $this->filmsRepository->getById($filmId);
+            }
+
+            return new FullPeopleDetail($peopleDetail, $films);
+        } catch (Throwable $throwable) {
+            throw new SearchFailedException(
+                message: "Unable to find person with id {$id}",
                 previous: $throwable
             );
         }

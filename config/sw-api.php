@@ -11,6 +11,6 @@ return [
     |
     */
 
-    'base_url' => env('SW_API_BASE_URL', 'https://swapi.tech/api/'),
+    'base_url' => env('SW_API_BASE_URL', 'https://www.swapi.tech/api/'),
 
 ];

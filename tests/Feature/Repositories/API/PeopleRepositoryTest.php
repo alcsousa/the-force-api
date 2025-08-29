@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Repositories\API;
 
+use App\DTOs\PeopleDetail;
 use App\DTOs\PeopleSearchResult;
 use App\Exceptions\StarWarsApiException;
 use App\Repositories\API\PeopleRepository;
@@ -44,7 +45,7 @@ class PeopleRepositoryTest extends TestCase
         $this->assertSame('Luminara Unduli', $results[1]->name);
 
         Http::assertSent(function ($request) use ($keyword) {
-            return $request->url() === "https://swapi.tech/api/people?name={$keyword}"
+            return $request->url() === "https://www.swapi.tech/api/people?name={$keyword}"
                 && $request->method() === 'GET'
                 && $request->data()['name'] === $keyword;
         });
@@ -90,5 +91,36 @@ class PeopleRepositoryTest extends TestCase
         $this->expectExceptionMessage('Error: Something went wrong');
 
         (new PeopleRepository)->searchPeopleByName('Lu');
+    }
+
+    public function test_get_details_returns_people_detail()
+    {
+        $id = '64';
+        Http::fake([
+            "swapi.tech/api/people/{$id}" => Http::response([
+                'result' => [
+                    'properties' => [
+                        'name' => 'Luminara Unduli',
+                        'birth_year' => '58BBY',
+                        'gender' => 'female',
+                        'eye_color' => 'blue',
+                        'hair_color' => 'black',
+                        'height' => '170',
+                        'mass' => '56.2',
+                        'films' => [
+                            'https://www.swapi.tech/api/films/5',
+                            'https://www.swapi.tech/api/films/6',
+                        ],
+                    ],
+                ],
+            ], Response::HTTP_OK),
+        ]);
+
+        $detail = (new PeopleRepository)->getDetails($id);
+
+        $this->assertInstanceOf(PeopleDetail::class, $detail);
+        $this->assertEquals('64', $detail->id);
+        $this->assertEquals('Luminara Unduli', $detail->name);
+        $this->assertSame([5, 6], $detail->filmIds);
     }
 }

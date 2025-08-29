@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GetPeopleByNameRequest;
+use App\Http\Resources\PeopleDetailResource;
 use App\Http\Resources\PeopleSearchResource;
 use App\Services\PeopleServiceContract;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -20,5 +21,12 @@ class PeopleController extends Controller
         );
 
         return PeopleSearchResource::collection($data);
+    }
+
+    public function details(string $id): PeopleDetailResource
+    {
+        $data = $this->peopleService->getById($id);
+
+        return PeopleDetailResource::make($data);
     }
 }
