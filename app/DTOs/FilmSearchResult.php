@@ -2,7 +2,7 @@
 
 namespace App\DTOs;
 
-class FilmSearchResult
+final readonly class FilmSearchResult
 {
     public function __construct(
         public int $id,

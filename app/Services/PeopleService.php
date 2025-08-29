@@ -41,7 +41,7 @@ final class PeopleService implements PeopleServiceContract
     public function getById(string $id): FullPeopleDetail
     {
         try {
-            $peopleDetail = $this->peopleRepository->getDetails($id);
+            $peopleDetail = $this->peopleRepository->getDetails((int) $id);
             $films = [];
 
             foreach ($peopleDetail->filmIds as $filmId) {

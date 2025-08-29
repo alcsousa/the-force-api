@@ -12,5 +12,5 @@ interface PeopleRepositoryContract
      */
     public function searchPeopleByName(string $name): array;
 
-    public function getDetails(string $id): PeopleDetail;
+    public function getDetails(int $id): PeopleDetail;
 }

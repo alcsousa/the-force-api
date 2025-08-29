@@ -52,7 +52,7 @@ class PeopleRepository implements PeopleRepositoryContract
     /**
      * @throws StarWarsApiException
      */
-    public function getDetails(string $id): PeopleDetail
+    public function getDetails(int $id): PeopleDetail
     {
         try {
             $result = Http::get(config('sw-api.base_url').'people'."/{$id}");

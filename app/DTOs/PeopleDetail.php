@@ -8,7 +8,7 @@ final readonly class PeopleDetail
      * @param  int[]  $filmIds
      */
     public function __construct(
-        public string $id,
+        public int $id,
         public string $name,
         public string $birthYear,
         public string $gender,

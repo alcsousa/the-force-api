@@ -2,7 +2,7 @@
 
 namespace App\DTOs;
 
-class FilmDetail
+final readonly class FilmDetail
 {
     /**
      * @param  int[]  $characterIds
