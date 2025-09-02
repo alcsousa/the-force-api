@@ -4,8 +4,25 @@
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
+@source '../**/*.vue';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+:root {
+    --green-teal: #0ab463;
+    --light-gray: #ededed;
+}
+
+.bg-green-teal {
+    background-color: #0ab463;
+}
+
+.bg-emerald {
+    background-color: #089954;
+}
+
+.hover\:bg-emerald:hover {
+    background-color: #089954;
 }
