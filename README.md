@@ -6,6 +6,13 @@
 cp .env.example .env
 ```
 
+Important `.env` variables to review (if ports or urls are different)
+```dotenv
+VITE_API_BASE_URL="http://localhost"
+FRONTEND_URL="http://localhost:5173"
+SANCTUM_STATEFUL_DOMAINS="localhost:5173"
+```
+
 Build containers
 ```bash
 docker compose build
