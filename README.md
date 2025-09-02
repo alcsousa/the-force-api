@@ -49,6 +49,7 @@ Run environment
 ```
 The command above will run the schedule, process the default queue and serve the UI.
 
+Access the application on http://localhost:5173
 
 ---
 
