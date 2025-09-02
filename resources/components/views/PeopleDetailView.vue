@@ -10,8 +10,8 @@
                     </span>
                 </div>
 
-                <div class="flex flex-row w-full gap-x-40">
-                    <div class="w-1/2">
+                <div class="flex flex-col md:flex-row w-full gap-8 md:gap-x-40">
+                    <div class="w-full md:w-1/2">
                         <span class="font-bold text-sm">Details</span>
                         <hr class="border border-gray-200 rounded-sm my-1">
 
@@ -23,7 +23,7 @@
                         <p>Mass: {{ peopleDetails?.mass }}</p>
                     </div>
 
-                    <div class="w-1/2">
+                    <div class="w-full md:w-1/2">
                         <span class="font-bold text-sm">Movies</span>
                         <hr class="border border-gray-200 rounded-sm my-1">
 
@@ -38,7 +38,6 @@
                                 <span v-if="idx < peopleDetails.films.length - 1">,</span>
                             </li>
                         </ul>
-
                     </div>
                 </div>
 

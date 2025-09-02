@@ -1,7 +1,7 @@
 <template>
     <BaseLayout>
-        <div class="flex flex-row w-full">
-            <div class="w-2/5">
+        <div class="flex flex-col md:flex-row w-full gap-4">
+            <div class="w-full md:w-2/5">
                 <ContentCard>
                     <span class="font-semibold">What are you searching for?</span>
 
@@ -35,7 +35,7 @@
                 </ContentCard>
             </div>
 
-            <div class="w-3/5">
+            <div class="w-full md:w-3/5 md:mt-0">
                 <ContentCard>
                     <div class="min-h-80">
                         <span class="font-bold">Results</span>
