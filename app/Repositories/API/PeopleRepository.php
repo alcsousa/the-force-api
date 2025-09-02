@@ -7,6 +7,7 @@ use App\DTOs\PeopleSearchResult;
 use App\Exceptions\StarWarsApiException;
 use App\Repositories\PeopleRepositoryContract;
 use App\Support\PathIdExtractor;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Throwable;
 
@@ -21,6 +22,20 @@ class PeopleRepository implements PeopleRepositoryContract
     {
         try {
             $searchResults = [];
+
+            $cacheKey = 'people_search:'.md5($name);
+            $cached = Cache::get($cacheKey);
+            if ($cached !== null) {
+                foreach ($cached as $cachedItem) {
+                    $searchResults[] = new PeopleSearchResult(
+                        id: $cachedItem['id'],
+                        name: $cachedItem['name']
+                    );
+                }
+
+                return $searchResults;
+            }
+
             $result = Http::get(config('sw-api.base_url').'people', [
                 'name' => $name,
             ]);
@@ -33,12 +48,20 @@ class PeopleRepository implements PeopleRepositoryContract
 
             $items = $result->json('result') ?? [];
 
+            $toCache = [];
             foreach ($items as $item) {
-                $searchResults[] = new PeopleSearchResult(
+                $person = new PeopleSearchResult(
                     id: $item['uid'],
                     name: $item['properties']['name']
                 );
+                $searchResults[] = $person;
+                $toCache[] = [
+                    'id' => $person->id,
+                    'name' => $person->name,
+                ];
             }
+
+            Cache::put($cacheKey, $toCache, now()->addMinutes(config('sw-api.cache_ttl')));
 
             return $searchResults;
         } catch (Throwable $throwable) {
@@ -55,15 +78,25 @@ class PeopleRepository implements PeopleRepositoryContract
     public function getDetails(int $id): PeopleDetail
     {
         try {
-            $result = Http::get(config('sw-api.base_url').'people'."/{$id}");
+            $cacheKey = "person:{$id}";
 
-            if (! $result->successful()) {
-                throw new StarWarsApiException(
-                    "Star Wars API request failed with status code: {$result->status()}"
-                );
+            $cached = Cache::get($cacheKey);
+            if ($cached !== null) {
+                $item = $cached;
+            } else {
+                $result = Http::get(config('sw-api.base_url').'people'."/{$id}");
+
+                if (! $result->successful()) {
+                    throw new StarWarsApiException(
+                        "Star Wars API request failed with status code: {$result->status()}"
+                    );
+                }
+
+                $item = $result->json('result.properties');
+
+                Cache::put($cacheKey, $item, now()->addMinutes(config('sw-api.cache_ttl')));
             }
 
-            $item = $result->json('result.properties');
             $filmUrls = $item['films'] ?? [];
             $filmIds = $this->extractFilmIdsFromUrls($filmUrls);
 

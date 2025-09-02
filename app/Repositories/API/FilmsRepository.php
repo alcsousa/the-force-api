@@ -7,6 +7,7 @@ use App\DTOs\FilmSearchResult;
 use App\Exceptions\StarWarsApiException;
 use App\Repositories\FilmsRepositoryContract;
 use App\Support\PathIdExtractor;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Throwable;
 
@@ -21,6 +22,20 @@ class FilmsRepository implements FilmsRepositoryContract
     {
         try {
             $searchResults = [];
+            $cacheKey = 'film_search:'.md5($title);
+            $cached = Cache::get($cacheKey);
+
+            if ($cached !== null) {
+                foreach ($cached as $cachedItem) {
+                    $searchResults[] = new FilmSearchResult(
+                        id: $cachedItem['id'],
+                        title: $cachedItem['title']
+                    );
+                }
+
+                return $searchResults;
+            }
+
             $result = Http::get(config('sw-api.base_url').'films', [
                 'title' => $title,
             ]);
@@ -32,13 +47,20 @@ class FilmsRepository implements FilmsRepositoryContract
             }
 
             $items = $result->json('result') ?? [];
-
+            $toCache = [];
             foreach ($items as $item) {
-                $searchResults[] = new FilmSearchResult(
+                $filmResult = new FilmSearchResult(
                     id: $item['uid'],
                     title: $item['properties']['title']
                 );
+                $searchResults[] = $filmResult;
+                $toCache[] = [
+                    'id' => $filmResult->id,
+                    'title' => $filmResult->title,
+                ];
             }
+
+            Cache::put($cacheKey, $toCache, now()->addMinutes(config('sw-api.cache_ttl')));
 
             return $searchResults;
         } catch (Throwable $throwable) {
@@ -55,15 +77,24 @@ class FilmsRepository implements FilmsRepositoryContract
     public function getById(int $id): FilmDetail
     {
         try {
-            $result = Http::get(config('sw-api.base_url').'films'."/{$id}");
+            $cacheKey = "film:{$id}";
 
-            if (! $result->successful()) {
-                throw new StarWarsApiException(
-                    "Star Wars API request failed with status code: {$result->status()}"
-                );
+            if (Cache::has($cacheKey)) {
+                $filmData = Cache::get($cacheKey);
+            } else {
+                $result = Http::get(config('sw-api.base_url').'films'."/{$id}");
+
+                if (! $result->successful()) {
+                    throw new StarWarsApiException(
+                        "Star Wars API request failed with status code: {$result->status()}"
+                    );
+                }
+
+                $filmData = $result->json('result.properties');
+
+                Cache::put($cacheKey, $filmData, now()->addMinutes(config('sw-api.cache_ttl')));
             }
 
-            $filmData = $result->json('result.properties');
             $characterUrls = $filmData['characters'] ?? [];
             $characterIds = $this->extractCharacterIdsFromUrls($characterUrls);
 
